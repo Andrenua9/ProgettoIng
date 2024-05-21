@@ -8,7 +8,7 @@ public class Cella {
     private int numero;
 
     public Cella(int row , int column){
-        if(row<=0 || column<=0)
+        if(row<0 || column<0)
             throw new IllegalArgumentException("Indice minore di 0 non valido!");
         this.row=row;
         this.column=column;
@@ -45,12 +45,12 @@ public class Cella {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Cella cella = (Cella) o;
-        return row == cella.row && column == cella.column && numero == cella.numero;
+        return row == cella.row && column == cella.column;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(row, column, numero);
+        return Objects.hash(row, column);
     }
 
     @Override
