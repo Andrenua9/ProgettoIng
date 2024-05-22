@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Cella {
     private int row;
     private int column;
-    private int numero;
+   // private int numero;
 
     public Cella(int row , int column){
         if(row<0 || column<0)
@@ -22,9 +22,7 @@ public class Cella {
         return column;
     }
 
-    public int getNumero() {
-        return numero;
-    }
+
 
     public void setRow(int row) {
         this.row = row;
@@ -33,11 +31,6 @@ public class Cella {
     public void setColumn(int column) {
         this.column = column;
     }
-
-    public void setNumero(int numero) {
-        this.numero = numero;
-    }
-
 
 
     @Override
@@ -58,7 +51,6 @@ public class Cella {
         return "Cella{" +
                 "row=" + row +
                 ", column=" + column +
-                ", numero=" + numero +
                 '}';
     }
 }
