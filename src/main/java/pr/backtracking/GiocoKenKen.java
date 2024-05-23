@@ -1,8 +1,10 @@
 package pr.backtracking;
 
+import java.util.Arrays;
+
 public class GiocoKenKen implements Backtracking<Cella, Integer> {
 
-    private Configurazione c;
+    private final Configurazione c;
     private int[][] griglia;
 
     public GiocoKenKen(Configurazione c, int[][] griglia) {
@@ -53,79 +55,106 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
 
     @Override
     public boolean assegnabile(Integer scelta, Cella puntoDiScelta) {
-        // Controllo riga
-        for (int colonna = 0; colonna < c.getDimensione(); colonna++)
-            if (griglia[puntoDiScelta.getRow()][colonna] == scelta)
-                return false;
-        // Controllo colonna
-        for (int riga = 0; riga < c.getDimensione(); riga++)
-            if (griglia[riga][puntoDiScelta.getColumn()] == scelta)
-                return false;
-        //controllo Blocco
-        boolean ver=false;
-        for(Blocco b: c.getBlocchi()){
-            for(Cella cc: b.getCelle()) {
-                if (puntoDiScelta.equals(cc)){
-                    griglia[puntoDiScelta.getRow()][puntoDiScelta.getColumn()]=scelta;
-                    if(!(controllaOperazione(b,griglia,puntoDiScelta)))
-                        return false;
+        // Controllo riga e colonna
+        if (!controllaRigheColonne(griglia, puntoDiScelta, scelta)) {
+            return false;
+        }
+
+        // Controllo blocco
+        for (Blocco b : c.getBlocchi()) {
+            if (Arrays.asList(b.getCelle()).contains(puntoDiScelta)) {
+                if (!controllaOperazione(b, griglia, puntoDiScelta, scelta)) {
+                    return false;
                 }
+            }
+        }
+
+        // Se tutti i controlli sono passati, aggiornare la griglia
+        griglia[puntoDiScelta.getRow()][puntoDiScelta.getColumn()] = scelta;
+        return true;
+    }
+
+    private boolean controllaRigheColonne(int[][] griglia, Cella puntoDiScelta, int scelta) {
+        // Controllo riga
+        for (int colonna = 0; colonna < c.getDimensione(); colonna++) {
+            if (griglia[puntoDiScelta.getRow()][colonna] == scelta) {
+                return false;
+            }
+        }
+
+        // Controllo colonna
+        for (int riga = 0; riga < c.getDimensione(); riga++) {
+            if (griglia[riga][puntoDiScelta.getColumn()] == scelta) {
+                return false;
             }
         }
         return true;
     }
 
-    private boolean ePieno(Blocco b,int [][] griglia){
-        for(Cella c: b.getCelle()){
+    private boolean ePieno(Blocco b, int[][] griglia) {
+        for (Cella c : b.getCelle()) {
             int i = c.getRow();
             int j = c.getColumn();
-            if(griglia[i][j] == 0)
+            if (griglia[i][j] == 0)
                 return false;
         }
         return true;
     }
 
-    private boolean controllaOperazione(Blocco b, int [][] griglia,Cella c) {
-        int ris = griglia[c.getRow()][c.getColumn()];
-        System.out.println(ris);
+    private boolean controllaOperazione(Blocco b, int[][] griglia, Cella c, int scelta) {
+        int ris = scelta;
         for (Cella cc : b.getCelle()) {
-            if (!(cc.equals(c)) && griglia[cc.getRow()][cc.getColumn()] != 0) {
-                System.out.println("Sto controllando il blocco"+b.toString());
+            if (!cc.equals(c) && griglia[cc.getRow()][cc.getColumn()] != 0) {
+                int valore = griglia[cc.getRow()][cc.getColumn()];
+                if(ePieno(b,griglia) && b.getRisultato()!= ris){
+                    return false;
+                }
                 switch (b.getOperazione()) {
                     case "+":
-                        ris += griglia[c.getRow()][c.getColumn()];
+                        ris += valore;
                         if (ris > b.getRisultato()) {
                             return false;
                         }
                         break;
                     case "-":
-                        ris -= griglia[c.getRow()][c.getColumn()];
-                        if (Math.abs(ris) < b.getRisultato() || Math.abs(ris) > b.getRisultato())
+                        ris = Math.abs(ris - valore);
+                        if (ris != b.getRisultato()) {
                             return false;
+                        }
                         break;
                     case "/":
-                        ris = ris / griglia[c.getRow()][c.getColumn()];
-                        int ris2 = griglia[c.getRow()][c.getColumn()] / ris;
-                        if (ris != b.getRisultato() || ris2 != b.getRisultato())
+                        if (valore != 0 && (ris % valore == 0 || valore % ris == 0)) {
+                            int div1 = ris / valore;
+                            int div2 = valore / ris;
+                            if ((div1 != b.getRisultato() && div2 != b.getRisultato())) {
+                                return false;
+                            }
+                        } else {
                             return false;
+                        }
                         break;
                     case "*":
-                        ris = ris * griglia[c.getRow()][c.getColumn()];
-                        if (ris > b.getRisultato())
+                        ris *= valore;
+                        if (ris > b.getRisultato()) {
                             return false;
+                        }
                         break;
                     default:
-                       if(ris!=b.getRisultato())
-                           return false;
+                        // Caso di operazione vuota
+                        if (ePieno(b,griglia)&&ris != b.getRisultato()) {
+                            return false;
+                        }
+                        break;
                 }
-                if (ePieno(b, griglia) && !(ris == b.getRisultato())) {
+                if (ePieno(b, griglia) && ris != b.getRisultato()) {
                     return false;
                 }
             }
-        }
-            return true;
 
+        }
+        return true;
     }
+
 
     @Override
     public void assegna(Integer scelta, Cella puntoDiScelta) {
@@ -239,7 +268,7 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
 
         GiocoKenKen kenKen = new GiocoKenKen(configurazione, griglia);
 
-        kenKen.risolvi(2);
+        kenKen.risolvi(3);
     }
 }
 

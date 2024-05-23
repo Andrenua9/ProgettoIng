@@ -7,6 +7,8 @@ public class Cella {
     private int column;
    // private int numero;
 
+    public Cella(){};
+
     public Cella(int row , int column){
         if(row<0 || column<0)
             throw new IllegalArgumentException("Indice minore di 0 non valido!");
