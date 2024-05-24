@@ -68,8 +68,7 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
                 }
             }
         }
-
-        // Se tutti i controlli sono passati, aggiornare la griglia
+        //check finito,aggiorno la griglia
         griglia[puntoDiScelta.getRow()][puntoDiScelta.getColumn()] = scelta;
         return true;
     }
@@ -144,9 +143,6 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
                             return false;
                         }
                         break;
-                }
-                if (ePieno(b, griglia) && ris != b.getRisultato()) {
-                    return false;
                 }
             }
 
@@ -260,7 +256,7 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
 
         GiocoKenKen kenKen = new GiocoKenKen(configurazione, griglia);
 
-        kenKen.risolvi(3);
+        kenKen.risolvi(2);
     }
 }
 
