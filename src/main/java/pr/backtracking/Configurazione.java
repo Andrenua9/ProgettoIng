@@ -1,8 +1,12 @@
 package pr.backtracking;
 
+import javax.swing.*;
+import java.io.*;
 import java.util.Scanner;
 
-public class Configurazione {
+public class Configurazione implements Serializable {
+
+    private static final long serialVersionUID=1L;
 
     private int dimensione; //le cifre si potranno disporre da 1 a dimensione(n)
     private int numeroBlocchi;
@@ -54,7 +58,37 @@ public class Configurazione {
         return (dimensione*dimensione+1)/2;
     }
 
+    void salvaObject() throws IOException {
+
+        JFileChooser fileChooser = new JFileChooser();
+
+        int result = fileChooser.showSaveDialog(null);
+
+        if (result == JFileChooser.APPROVE_OPTION) { // Se l'utente ha cliccato su "Salva"
+            String nomeFile = fileChooser.getSelectedFile().getAbsolutePath();
+
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nomeFile));
+            oos.writeObject(this);
+            oos.close();
+        }
+    }
+
+    /*static void ripristina() throws IOException, ClassNotFoundException {
+        //File fi = new File()
+    }*/
+
     public static void main(String[] args) {
+        Configurazione oggetto = new Configurazione();
+
+        try {
+            oggetto.salvaObject();
+            System.out.println("Oggetto salvato correttamente.");
+        } catch (IOException e) {
+            System.err.println("Si è verificato un errore durante il salvataggio dell'oggetto: " + e.getMessage());
+        }
+    }
+    }
+        /*
         Scanner scanner = new Scanner(System.in);
         boolean validInput = false;
 
@@ -113,7 +147,7 @@ public class Configurazione {
         }
 
         scanner.close();
-    }
-    }
+    }*/
+
 
 
