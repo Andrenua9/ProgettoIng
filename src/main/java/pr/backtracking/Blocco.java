@@ -41,6 +41,7 @@ public class Blocco {
         if(this.dimensione >4)
             throw new IllegalArgumentException("Dimensione massima blocco superata!");
         this.dimensione = dimensione;
+
     }
 
     public void setOperazione(String operazione) {

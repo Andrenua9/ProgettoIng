@@ -15,6 +15,7 @@ public class InterfacciaGUI extends JFrame {
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+                                            /* QUASIMODO */
 
         // Caricamento dell'immagine di sfondo
       //  ImageIcon backgroundImage = new ImageIcon(getClass().getResource("/kenken.jpg"));
@@ -33,6 +34,7 @@ public class InterfacciaGUI extends JFrame {
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         add(mainPanel);
+
 
         // Pannello centrale con GridBagLayout per centrare e dimensionare i pulsanti
         JPanel buttonPanel = new JPanel(new GridBagLayout());
@@ -66,7 +68,7 @@ public class InterfacciaGUI extends JFrame {
     private void secondaPagina(JPanel panel ) {
         getContentPane().remove(panel);
         validate();
-        JPanel j = new JPanel(new GridBagLayout()) ;
+
         JButton Crea = new JButton("Crea Configurazione");
         JButton carica = new JButton("Carica da File");
 
@@ -82,6 +84,13 @@ public class InterfacciaGUI extends JFrame {
         Crea.setPreferredSize(buttonSize);
         carica.setPreferredSize(buttonSize);
 
+        Crea.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                new CreaConfig().setVisible(true);
+            }
+        });
+
         GridBagConstraints gbc = impostazioniTasti();
 
         buttonPanel.add(Crea, gbc);
@@ -90,6 +99,8 @@ public class InterfacciaGUI extends JFrame {
         getContentPane().add(mainPanel);
         validate();
     }
+
+   // private formConfigurazione
 
     private GridBagConstraints impostazioniTasti(){
         GridBagConstraints gbc = new GridBagConstraints();
@@ -101,12 +112,6 @@ public class InterfacciaGUI extends JFrame {
         return gbc;
     }
 
-
-
-    public Configurazione gestisciConfigurazione() {
-        Configurazione c = new Configurazione();
-        return c;
-    }
 
     public static void main(String[] args) {
         new InterfacciaGUI();

@@ -1,11 +1,15 @@
 package pr.backtracking;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class GiocoKenKen implements Backtracking<Cella, Integer> {
 
     private final Configurazione c;
     private int[][] griglia;
+
+    private List<int[][]> soluzioni;
 
     public GiocoKenKen(Configurazione c, int[][] griglia) {
         this.c = c;
@@ -15,6 +19,7 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
                 this.griglia[i][j] = 0;
             }
         }
+        soluzioni=new ArrayList<int[][]>();
     }
 
     @Override
@@ -189,6 +194,15 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
             }
             System.out.println();
         }
+       // soluzioni.add(copiaGrigia(griglia));
+    }
+
+   /* private int [][] copiaGrigia(int [][] griglia){
+
+    }*/
+
+    public List<int[][]> getSoluzioni() {
+        return soluzioni;
     }
 
     public static void main(String[] args) {

@@ -51,14 +51,17 @@ public class Configurazione implements Serializable {
         this.numeroBlocchi = numeroBlocchi;
     }
 
-    public int upperBound(){
+    public int lowerBound(){
+
         return dimensione;
     }
-    public int lowerBound(){
+    public int upperBound(){
+
         return (dimensione*dimensione+1)/2;
     }
 
-    void salvaObject() throws IOException {
+
+    public void salvaObject() throws IOException {
 
         JFileChooser fileChooser = new JFileChooser();
 
