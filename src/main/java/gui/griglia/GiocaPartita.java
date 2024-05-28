@@ -8,6 +8,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/*
+
+Aggiungere etichetta con il risultato e l'operazione nei blocchi, colorare i blocchi di colore diverso
+Visualizzazione soluzioni (tasti next e previous)
+Memento nel backtracking
+Vedere che altri pattern utilizzare
+Abbellire la grafica
+ */
+
 public class GiocaPartita extends JPanel {
     private Configurazione c;
     private GridLayout g;
@@ -23,7 +32,7 @@ public class GiocaPartita extends JPanel {
 
         int dimensione = c.getDimensione();
         g = new GridLayout(dimensione, dimensione);
-        this.grigliaCopia= new int[dimensione][dimensione];
+        this.grigliaCopia = new int[dimensione][dimensione];
 
         JPanel gridPanel = new JPanel();
         gridPanel.setLayout(g);
@@ -45,10 +54,10 @@ public class GiocaPartita extends JPanel {
                     try {
                         grigliaCopia[i][j] = Integer.parseInt(text);
                     } catch (NumberFormatException e) {
-                        grigliaCopia[i][j] = 0; // or handle error as appropriate
+                        grigliaCopia[i][j] = 0;
                     }
                 } else {
-                    grigliaCopia[i][j] = 0; // or handle empty cell as appropriate
+                    grigliaCopia[i][j] = 0;
                 }
 
 
@@ -73,7 +82,6 @@ public class GiocaPartita extends JPanel {
             }
         }
 
-
         this.add(gridPanel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
@@ -86,39 +94,66 @@ public class GiocaPartita extends JPanel {
         buttonPanel.add(abilita);
         buttonPanel.add(soluzioni);
         buttonPanel.add(esci);
+        add(buttonPanel, BorderLayout.SOUTH);
 
-        Timer timer = new Timer(10000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                abilitaCorrezione(); // Chiamato quando il timer scatta
-            }
-        });
+
 
         abilita.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!timer.isRunning()) {
-                    timer.start();
-                }
+                abilitaCorrezione(); // Chiamiamo il metodo di correzione
+                Timer timer = new Timer(10000, new ActionListener() { // Avviamo il timer dopo la chiamata al metodo
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        for (int i = 0; i < grigliaCopia.length; i++) {
+                            for (int j = 0; j < grigliaCopia[i].length; j++) {
+                                celle[i][j].setBackground(Color.white); // Ripristina il colore bianco
+                            }
+                        }
+                        ((Timer) e.getSource()).stop(); // Arresta il timer
+                    }
+                });
+                timer.setRepeats(false); // Assicuriamo che il timer si esegua solo una volta
+                timer.start(); // Avviamo il timer
             }
         });
 
-
-        this.add(buttonPanel, BorderLayout.SOUTH);
     }
-
-    private void abilitaCorrezione() {
-        GiocoKenKen g = new GiocoKenKen(c,grigliaCopia);
-        for(int i = 0; i < grigliaCopia.length; i++) {
-            for(int j = 0; j < grigliaCopia[i].length; j++) {
-                if(g.assegnabile(grigliaCopia[i][j],new Cella(i,j))){
-                    celle[i][j].setBackground(Color.green);
+    public void abilitaCorrezione() {
+        int[][] gg = aggionraGriglia(grigliaCopia);
+        GiocoKenKen g = new GiocoKenKen(c, gg);
+        for (int i = 0; i < gg.length; i++) {
+            for (int j = 0; j < gg[i].length; j++) {
+                if (gg[i][j] != 0) {
+                    if (g.assegnabile(gg[i][j], new Cella(i, j))) {
+                        celle[i][j].setBackground(Color.green);
+                    } else
+                        celle[i][j].setBackground(Color.red);
                 }
-                else
-                    celle[i][j].setBackground(Color.red);
             }
         }
     }
+
+    private int[][] aggionraGriglia(int[][] griglia) {
+        int [][] nuovaGriglia = new int[griglia.length][griglia[0].length];
+        for (int i = 0; i < griglia.length; i++) {
+            for (int j = 0; j < griglia[i].length; j++) {
+                String text = celle[i][j].getText();
+                if (!text.isEmpty()) {
+                    try {
+                        nuovaGriglia[i][j] = Integer.parseInt(text);
+                    } catch (NumberFormatException e) {
+                        nuovaGriglia[i][j] = 0;
+                    }
+                } else {
+                    nuovaGriglia[i][j] = 0;
+                }
+            }
+        }
+        return nuovaGriglia;
+    }
+
+
 
 
     public static void main(String[] args) {

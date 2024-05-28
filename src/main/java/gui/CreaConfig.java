@@ -18,18 +18,22 @@ public class CreaConfig extends JFrame {
     private JButton salvaButton;
     private JButton giocaButton;
     private Configurazione c;
+    private JTextArea blocchiTextArea;
 
     private Blocco[] blocchi;
     private int bloccoIndex;
 
     public CreaConfig() {
         setTitle("Configurazione");
-        setSize(400, 300);
+        setSize(400, 400); // Incrementata la dimensione della finestra
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(6, 2, 10, 10));
+        panel.setLayout(new BorderLayout(10, 10));
+
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new GridLayout(6, 2, 10, 10));
 
         JLabel dimensioneLabel = new JLabel("Dimensione della griglia (3-6):");
         dimensioneField = new JTextField();
@@ -43,16 +47,23 @@ public class CreaConfig extends JFrame {
         salvaButton = new JButton("Salva");
         giocaButton = new JButton("Gioca");
 
-        panel.add(dimensioneLabel);
-        panel.add(dimensioneField);
-        panel.add(numeroBlocchiLabel);
-        panel.add(numeroBlocchiField);
-        panel.add(soluzioniMassimeLabel);
-        panel.add(soluzioniMassimeField);
-        panel.add(bloccoLabel);
-        panel.add(aggiungiBloccoButton);
-        panel.add(salvaButton);
-        panel.add(giocaButton);
+        inputPanel.add(dimensioneLabel);
+        inputPanel.add(dimensioneField);
+        inputPanel.add(numeroBlocchiLabel);
+        inputPanel.add(numeroBlocchiField);
+        inputPanel.add(soluzioniMassimeLabel);
+        inputPanel.add(soluzioniMassimeField);
+        inputPanel.add(bloccoLabel);
+        inputPanel.add(aggiungiBloccoButton);
+        inputPanel.add(salvaButton);
+        inputPanel.add(giocaButton);
+
+        blocchiTextArea = new JTextArea();
+        blocchiTextArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(blocchiTextArea);
+
+        panel.add(inputPanel, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
 
         blocchi = null;
 
@@ -105,9 +116,9 @@ public class CreaConfig extends JFrame {
                 throw new IllegalArgumentException("La dimensione del blocco deve essere compresa tra 1 e 4.");
             }
 
-            String operazione = JOptionPane.showInputDialog("Inserisci l'operazione (+, -, *, /):");
-            if (!operazione.equals("+") && !operazione.equals("-") && !operazione.equals("*") && !operazione.equals("/")) {
-                throw new IllegalArgumentException("Operazione non valida. Utilizzare solo '+', '-', '*' o '/'.");
+            String operazione = JOptionPane.showInputDialog("Inserisci l'operazione (+, -, *, /, vuota):");
+            if (!operazione.equals("+") && !operazione.equals("-") && !operazione.equals("*") && !operazione.equals("/") && !operazione.isEmpty()) {
+                throw new IllegalArgumentException("Operazione non valida. Utilizzare solo '+', '-', '*', '/' o lasciare vuoto.");
             }
 
             int risultato = Integer.parseInt(JOptionPane.showInputDialog("Inserisci il risultato:"));
@@ -121,7 +132,14 @@ public class CreaConfig extends JFrame {
             }
 
             // Creazione del blocco e aggiunta all'array
-            blocchi[bloccoIndex++] = new Blocco(dimensioneBlocco, operazione, risultato, celle.toArray(new Cella[0]));
+            Blocco blocco = new Blocco(dimensioneBlocco, operazione, risultato, celle.toArray(new Cella[0]));
+            blocchi[bloccoIndex++] = blocco;
+
+            // Aggiungi il blocco al JTextArea
+            blocchiTextArea.append("Blocco " + bloccoIndex + ": Dimensione=" + dimensioneBlocco + ", Operazione=" + operazione + ", Risultato=" + risultato + "\n");
+            for (Cella cella : blocco.getCelle()) {
+                blocchiTextArea.append("  Cella: (" + cella.getRow() + "," + cella.getColumn() + ")\n");
+            }
 
             JOptionPane.showMessageDialog(this, "Blocco aggiunto con successo.");
         } catch (NumberFormatException ex) {
@@ -130,6 +148,7 @@ public class CreaConfig extends JFrame {
             JOptionPane.showMessageDialog(this, "Errore: " + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
     private void salvaConfigurazione() throws IOException {
         try {
@@ -141,6 +160,10 @@ public class CreaConfig extends JFrame {
             int numeroBlocchi = Integer.parseInt(numeroBlocchiField.getText());
             if (numeroBlocchi < 1) {
                 throw new IllegalArgumentException("Il numero di blocchi deve essere almeno 1.");
+            }
+
+            if (bloccoIndex != numeroBlocchi) {
+                throw new IllegalArgumentException("Numero di blocchi aggiunti non corrisponde al numero di blocchi indicato.");
             }
 
             int soluzioniMassime = Integer.parseInt(soluzioniMassimeField.getText());

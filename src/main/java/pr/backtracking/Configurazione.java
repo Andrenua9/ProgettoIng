@@ -45,7 +45,7 @@ public class Configurazione implements Serializable {
         }
     }
     public void setNumeroBlocchi(int numeroBlocchi) {
-        if (numeroBlocchi < upperBound() || numeroBlocchi > lowerBound()) {
+        if (numeroBlocchi < lowerBound() || numeroBlocchi > upperBound()) {
             throw new IllegalArgumentException("Numero di blocchi non valido.");
         }
         this.numeroBlocchi = numeroBlocchi;
@@ -76,9 +76,21 @@ public class Configurazione implements Serializable {
         }
     }
 
-    /*static void ripristina() throws IOException, ClassNotFoundException {
-        //File fi = new File()
-    }*/
+    public Object ripristinaObject() throws IOException, ClassNotFoundException {
+        JFileChooser fileChooser = new JFileChooser();
+
+        int result = fileChooser.showOpenDialog(null);
+
+        if (result == JFileChooser.APPROVE_OPTION) { // Verifica se l'utente ha selezionato un file
+            String nomeFile = fileChooser.getSelectedFile().getAbsolutePath();
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(nomeFile));
+
+            return ois.readObject();
+        } else {
+            return null;
+        }
+    }
+
 
     public static void main(String[] args) {
         Configurazione oggetto = new Configurazione();

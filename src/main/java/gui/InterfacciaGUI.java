@@ -1,11 +1,13 @@
 package gui;
 
+import gui.griglia.GiocaPartita;
 import pr.backtracking.Configurazione;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 public class InterfacciaGUI extends JFrame {
 
@@ -91,6 +93,27 @@ public class InterfacciaGUI extends JFrame {
             }
         });
 
+        //carica configurazione da file
+        carica.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Configurazione c = new Configurazione();
+                try {
+                    c = (Configurazione) c.ripristinaObject();
+                    JFrame frame = new JFrame("Gioca Partita");
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    frame.setSize(800, 800);
+                    frame.setLayout(new BorderLayout());
+                    frame.add(new GiocaPartita(c), BorderLayout.CENTER);
+                    frame.setVisible(true);
+                } catch (IOException | ClassNotFoundException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Errore durante il caricamento del file.", "Errore", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+
         GridBagConstraints gbc = impostazioniTasti();
 
         buttonPanel.add(Crea, gbc);
@@ -100,7 +123,6 @@ public class InterfacciaGUI extends JFrame {
         validate();
     }
 
-   // private formConfigurazione
 
     private GridBagConstraints impostazioniTasti(){
         GridBagConstraints gbc = new GridBagConstraints();

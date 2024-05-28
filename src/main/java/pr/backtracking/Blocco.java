@@ -1,11 +1,15 @@
 package pr.backtracking;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class Blocco {
+public class Blocco implements Serializable {
+
+    private static final long serialVersionUID = 1234567L;
     private int dimensione;
     private String operazione;
     private int risultato;

@@ -1,11 +1,12 @@
 package pr.backtracking;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Cella {
+public class Cella implements Serializable {
+    private static final long serialVersionUID = 123567L;
     private int row;
     private int column;
-   // private int numero;
 
     public Cella(){};
 
