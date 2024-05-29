@@ -120,7 +120,7 @@ public class GiocaPartita extends JPanel {
 
     }
     public void abilitaCorrezione() {
-        int[][] gg = aggionraGriglia(grigliaCopia);
+        int[][] gg = aggiornaGriglia(grigliaCopia);
         GiocoKenKen g = new GiocoKenKen(c, gg);
         for (int i = 0; i < gg.length; i++) {
             for (int j = 0; j < gg[i].length; j++) {
@@ -134,7 +134,7 @@ public class GiocaPartita extends JPanel {
         }
     }
 
-    private int[][] aggionraGriglia(int[][] griglia) {
+    private int[][] aggiornaGriglia(int[][] griglia) {
         int [][] nuovaGriglia = new int[griglia.length][griglia[0].length];
         for (int i = 0; i < griglia.length; i++) {
             for (int j = 0; j < griglia[i].length; j++) {

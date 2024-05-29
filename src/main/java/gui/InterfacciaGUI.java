@@ -89,6 +89,7 @@ public class InterfacciaGUI extends JFrame {
         Crea.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+
                 new CreaConfig().setVisible(true);
             }
         });
