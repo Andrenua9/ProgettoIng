@@ -14,10 +14,8 @@ public class InterfacciaGUI extends JFrame {
     public InterfacciaGUI() {
         // Impostazioni JFrame
         setTitle("KenKen");
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-                                            /* QUASIMODO */
 
         // Caricamento dell'immagine di sfondo
       //  ImageIcon backgroundImage = new ImageIcon(getClass().getResource("/kenken.jpg"));

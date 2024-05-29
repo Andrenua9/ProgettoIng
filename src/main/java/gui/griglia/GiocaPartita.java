@@ -101,20 +101,20 @@ public class GiocaPartita extends JPanel {
         abilita.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                abilitaCorrezione(); // Chiamiamo il metodo di correzione
-                Timer timer = new Timer(10000, new ActionListener() { // Avviamo il timer dopo la chiamata al metodo
+                abilitaCorrezione();
+                Timer timer = new Timer(5000, new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         for (int i = 0; i < grigliaCopia.length; i++) {
                             for (int j = 0; j < grigliaCopia[i].length; j++) {
-                                celle[i][j].setBackground(Color.white); // Ripristina il colore bianco
+                                celle[i][j].setBackground(Color.white);
                             }
                         }
-                        ((Timer) e.getSource()).stop(); // Arresta il timer
+                        ((Timer) e.getSource()).stop();
                     }
                 });
-                timer.setRepeats(false); // Assicuriamo che il timer si esegua solo una volta
-                timer.start(); // Avviamo il timer
+                timer.setRepeats(false);
+                timer.start();
             }
         });
 
