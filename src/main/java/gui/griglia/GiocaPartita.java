@@ -1,5 +1,6 @@
 package gui.griglia;
 
+import pr.backtracking.Blocco;
 import pr.backtracking.Cella;
 import pr.backtracking.Configurazione;
 import pr.backtracking.GiocoKenKen;
@@ -37,6 +38,8 @@ public class GiocaPartita extends JPanel {
         JPanel gridPanel = new JPanel();
         gridPanel.setLayout(g);
 
+        gridPanel.setOpaque(false);
+
         celle = new JTextField[dimensione][dimensione];
 
         for (int i = 0; i < dimensione; i++) {
@@ -45,7 +48,7 @@ public class GiocaPartita extends JPanel {
                 gridPanel.add(celle[i][j]);
 
 
-                celle[i][j].setFont(new Font(celle[i][j].getFont().getName(), Font.PLAIN, 30));
+                celle[i][j].setFont(new Font(celle[i][j].getFont().getName(), Font.ROMAN_BASELINE, 30));
                 celle[i][j].setHorizontalAlignment(JTextField.CENTER);
 
                 //Salvo il contenuto delle celle in una griglia
@@ -82,6 +85,8 @@ public class GiocaPartita extends JPanel {
             }
         }
 
+        aggiungiEtichetta(gridPanel);
+
         this.add(gridPanel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
@@ -95,7 +100,6 @@ public class GiocaPartita extends JPanel {
         buttonPanel.add(soluzioni);
         buttonPanel.add(esci);
         add(buttonPanel, BorderLayout.SOUTH);
-
 
 
         abilita.addMouseListener(new MouseAdapter() {
@@ -153,6 +157,31 @@ public class GiocaPartita extends JPanel {
         return nuovaGriglia;
     }
 
+    private void aggiungiEtichetta(JPanel gridPanel) {
+        int i = 0;
+        for (Blocco b : c.getBlocchi()) {
+            Cella first = b.getCelle()[0];
+            JLabel vincolo = new JLabel(b.getRisultato() + " " + b.getOperazione());
+            JTextField casella = celle[first.getRow()][first.getColumn()];
+
+            vincolo.setBounds(casella.getX()+3,casella.getY()-(40-(c.getDimensione()-2)*6), casella.getWidth(), casella.getHeight());
+            vincolo.setOpaque(true);
+            vincolo.setBackground(new Color(255, 255, 255, 200));
+
+            gridPanel.add(vincolo, JLayeredPane.PALETTE_LAYER);
+
+            for (Cella c : b.getCelle()) {
+                try {
+                    celle[c.getRow()][c.getColumn()].setBackground(new Color(90 + i, 90 + i, 90 + i));
+                } catch (IllegalArgumentException e) {
+                    i = 0;
+                    celle[c.getRow()][c.getColumn()].setBackground(new Color(90, 90, 90));
+                }
+            }
+            i += 33;
+        }
+
+    }
 
 
 

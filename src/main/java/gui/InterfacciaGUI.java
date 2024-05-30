@@ -14,12 +14,14 @@ public class InterfacciaGUI extends JFrame {
     public InterfacciaGUI() {
         // Impostazioni JFrame
         setTitle("KenKen");
-        setSize(800, 600);
+        setSize(800, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Caricamento dell'immagine di sfondo
-      //  ImageIcon backgroundImage = new ImageIcon(getClass().getResource("/kenken.jpg"));
-
+        ImageIcon backgroundImage = new ImageIcon(getClass().getResource("/unnamed.jpg"));
+        JLabel backgroundLabel = new JLabel(backgroundImage);
+        setContentPane(backgroundLabel);
+        backgroundLabel.setLayout(new BorderLayout());
 
         JButton giocaPartita = new JButton("Gioca partita");
         JButton opzioni = new JButton("Opzioni");
@@ -33,13 +35,13 @@ public class InterfacciaGUI extends JFrame {
         });
 
         JPanel mainPanel = new JPanel(new BorderLayout());
-        add(mainPanel);
-
+        mainPanel.setOpaque(false); // Trasparenza
+        backgroundLabel.add(mainPanel);
 
         // Pannello centrale con GridBagLayout per centrare e dimensionare i pulsanti
         JPanel buttonPanel = new JPanel(new GridBagLayout());
+        buttonPanel.setOpaque(false); // Trasparenza
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
-
 
         // Constraints per centrare e separare i pulsanti
         GridBagConstraints gbc = impostazioniTasti();
@@ -58,27 +60,27 @@ public class InterfacciaGUI extends JFrame {
         giocaPartita.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                    secondaPagina(mainPanel);
+                secondaPagina(mainPanel);
             }
         });
 
         setVisible(true);
     }
 
-    private void secondaPagina(JPanel panel ) {
+    private void secondaPagina(JPanel panel) {
         getContentPane().remove(panel);
         validate();
 
         JButton Crea = new JButton("Crea Configurazione");
         JButton carica = new JButton("Carica da File");
 
-
         JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setOpaque(false); // Trasparenza
         add(mainPanel);
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
+        buttonPanel.setOpaque(false); // Trasparenza
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
-
 
         Dimension buttonSize = new Dimension(500, 75);
         Crea.setPreferredSize(buttonSize);
@@ -87,12 +89,11 @@ public class InterfacciaGUI extends JFrame {
         Crea.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
                 new CreaConfig().setVisible(true);
             }
         });
 
-        //carica configurazione da file
+        // Carica configurazione da file
         carica.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -101,7 +102,7 @@ public class InterfacciaGUI extends JFrame {
                     c = (Configurazione) c.ripristinaObject();
                     JFrame frame = new JFrame("Gioca Partita");
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    frame.setSize(800, 800);
+                    frame.setSize(500, 500);
                     frame.setLayout(new BorderLayout());
                     frame.add(new GiocaPartita(c), BorderLayout.CENTER);
                     frame.setVisible(true);
@@ -112,7 +113,6 @@ public class InterfacciaGUI extends JFrame {
             }
         });
 
-
         GridBagConstraints gbc = impostazioniTasti();
 
         buttonPanel.add(Crea, gbc);
@@ -122,8 +122,7 @@ public class InterfacciaGUI extends JFrame {
         validate();
     }
 
-
-    private GridBagConstraints impostazioniTasti(){
+    private GridBagConstraints impostazioniTasti() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 50, 10); // Spazio tra i pulsanti
         gbc.gridx = 0;
@@ -132,7 +131,6 @@ public class InterfacciaGUI extends JFrame {
         gbc.fill = GridBagConstraints.NONE;
         return gbc;
     }
-
 
     public static void main(String[] args) {
         new InterfacciaGUI();

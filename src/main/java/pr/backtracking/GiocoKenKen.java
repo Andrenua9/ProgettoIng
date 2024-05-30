@@ -197,10 +197,6 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
        // soluzioni.add(copiaGrigia(griglia));
     }
 
-   /* private int [][] copiaGrigia(int [][] griglia){
-
-    }*/
-
     public List<int[][]> getSoluzioni() {
         return soluzioni;
     }
