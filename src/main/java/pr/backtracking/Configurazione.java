@@ -11,6 +11,7 @@ public class Configurazione implements Serializable {
     private int dimensione; //le cifre si potranno disporre da 1 a dimensione(n)
     private int numeroBlocchi;
     private Blocco[] blocchi= new Blocco[numeroBlocchi];
+    private int maxSol;
 
 
     public Configurazione(){};
@@ -26,6 +27,13 @@ public class Configurazione implements Serializable {
 
     public int getNumeroBlocchi() {
         return numeroBlocchi;
+    }
+
+    public int getMaxSol() {
+        return maxSol;
+    }
+    public void setMaxSol(int maxSol){
+        this.maxSol=maxSol;
     }
 
     public void setDimensione(int dimensione) {

@@ -171,6 +171,7 @@ public class CreaConfig extends JFrame {
             c = new Configurazione();
             c.setDimensione(dimensione);
             c.setNumeroBlocchi(numeroBlocchi);
+            c.setMaxSol(soluzioniMassime);
             c.setBlocchi(blocchi);
 
             c.salvaObject();

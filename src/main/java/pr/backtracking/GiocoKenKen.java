@@ -1,5 +1,8 @@
 package pr.backtracking;
 
+import pr.memento.Griglia;
+import pr.memento.Memento;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +12,7 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
     private final Configurazione c;
     private int[][] griglia;
 
-    private List<int[][]> soluzioni;
+    private List<Griglia> soluzioni;
 
     public GiocoKenKen(Configurazione c, int[][] griglia) {
         this.c = c;
@@ -19,7 +22,7 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
                 this.griglia[i][j] = 0;
             }
         }
-        soluzioni=new ArrayList<int[][]>();
+        soluzioni=new ArrayList<Griglia>();
     }
 
     @Override
@@ -194,10 +197,10 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
             }
             System.out.println();
         }
-       // soluzioni.add(copiaGrigia(griglia));
+       soluzioni.add(new Griglia(griglia));
     }
 
-    public List<int[][]> getSoluzioni() {
+    public List<Griglia> getSoluzioni() {
         return soluzioni;
     }
 

@@ -4,40 +4,54 @@ import pr.backtracking.Blocco;
 import pr.backtracking.Cella;
 import pr.backtracking.Configurazione;
 import pr.backtracking.GiocoKenKen;
+import pr.memento.Griglia;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GiocaPartita extends JPanel {
     private Configurazione c;
-    private GridLayout g;
     private JTextField[][] celle;
-    private JButton abilita;
-    private JButton soluzioni;
-    private JButton esci;
     private int[][] grigliaCopia;
+    private JPanel gridPanel;
+    private Map<JLabel, Point> etichettePosizioni = new HashMap<>();
+    private List<Griglia> soluzioni;
+    private JFrame soluzioniFrame;
+    private int currentSolutionIndex = 0;
 
     public GiocaPartita(Configurazione c) {
         this.c = c;
         this.setLayout(new BorderLayout());
 
         int dimensione = c.getDimensione();
-        g = new GridLayout(dimensione, dimensione);
         this.grigliaCopia = new int[dimensione][dimensione];
 
-        JLayeredPane gridPanel = new JLayeredPane();
-        gridPanel.setLayout(g);
+        JLayeredPane pane = new JLayeredPane();
+        this.add(pane, BorderLayout.CENTER);
+
+        gridPanel = new JPanel();
+        gridPanel.setLayout(new GridBagLayout());
+        gridPanel.setBounds(0, 0, dimensione * 100, dimensione * 100); // Imposta la dimensione del pannello
 
         celle = new JTextField[dimensione][dimensione];
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
 
         for (int i = 0; i < dimensione; i++) {
             for (int j = 0; j < dimensione; j++) {
                 celle[i][j] = new JTextField();
-                celle[i][j].setFont(new Font(celle[i][j].getFont().getName(), Font.ROMAN_BASELINE, 30));
+                celle[i][j].setFont(new Font(celle[i][j].getFont().getName(), Font.PLAIN, 30));
                 celle[i][j].setHorizontalAlignment(JTextField.CENTER);
-                celle[i][j].setBounds(j * 100, i * 100, 100, 100);
-                gridPanel.add(celle[i][j], Integer.valueOf(1));
+                gbc.gridx = j;
+                gbc.gridy = i;
+                gridPanel.add(celle[i][j], gbc);
 
                 celle[i][j].addKeyListener(new KeyAdapter() {
                     @Override
@@ -59,97 +73,157 @@ public class GiocaPartita extends JPanel {
             }
         }
 
-        aggiungiEtichetta(gridPanel);
-
-        this.add(gridPanel, BorderLayout.CENTER);
+        aggiungiEtichetta(pane);
+        coloraCelle();
+        pane.add(gridPanel, JLayeredPane.DEFAULT_LAYER);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        abilita = new JButton("Abilita correzione");
-        soluzioni = new JButton("Visualizza soluzioni");
-        esci = new JButton("Esci");
+        JButton visualizzaSoluzioni = new JButton("Visualizza soluzioni");
+        JButton abilitaCorrezione = new JButton("Abilita Correzione");
+        JButton esci = new JButton("Esci");
 
-        buttonPanel.add(abilita);
-        buttonPanel.add(soluzioni);
+        buttonPanel.add(visualizzaSoluzioni);
+        buttonPanel.add(abilitaCorrezione);
         buttonPanel.add(esci);
         this.add(buttonPanel, BorderLayout.SOUTH);
 
-        abilita.addMouseListener(new MouseAdapter() {
+        visualizzaSoluzioni.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                abilitaCorrezione();
-                Timer timer = new Timer(5000, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        for (int i = 0; i < grigliaCopia.length; i++) {
-                            for (int j = 0; j < grigliaCopia[i].length; j++) {
-                                celle[i][j].setBackground(Color.white);
-                            }
-                        }
-                        ((Timer) e.getSource()).stop();
-                    }
-                });
-                timer.setRepeats(false);
-                timer.start();
+                visualizzaSoluzioni();
+            }
+        });
+
+        // Riadatta la dimensione della finestra
+        pane.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                resizeGrid(pane.getSize());
             }
         });
     }
 
-    public void abilitaCorrezione() {
-        int[][] gg = aggiornaGriglia(grigliaCopia);
-        GiocoKenKen g = new GiocoKenKen(c, gg);
-        for (int i = 0; i < gg.length; i++) {
-            for (int j = 0; j < gg[i].length; j++) {
-                if (gg[i][j] != 0) {
-                    if (g.assegnabile(gg[i][j], new Cella(i, j))) {
-                        celle[i][j].setBackground(Color.green);
-                    } else {
-                        celle[i][j].setBackground(Color.red);
+    private void visualizzaSoluzioni() {
+        if (soluzioniFrame == null) {
+            soluzioniFrame = new JFrame("Soluzioni");
+            soluzioniFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            soluzioniFrame.setSize(500, 500);
+            soluzioniFrame.setLayout(new BorderLayout());
+
+            JButton next = new JButton("Next");
+            JButton previous = new JButton("Previous");
+            JButton ritornaAllaPartita = new JButton("Ritorna alla partita");
+
+            next.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (soluzioni != null && currentSolutionIndex < soluzioni.size() - 1) {
+                        currentSolutionIndex++;
+                        aggiornaGrigliaSoluzione();
                     }
+                }
+            });
+
+            previous.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (soluzioni != null && currentSolutionIndex > 0) {
+                        currentSolutionIndex--;
+                        aggiornaGrigliaSoluzione();
+                    }
+                }
+            });
+
+            ritornaAllaPartita.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    soluzioniFrame.setVisible(false);
+                }
+            });
+
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            buttonPanel.add(previous);
+            buttonPanel.add(next);
+            buttonPanel.add(ritornaAllaPartita);
+
+            soluzioniFrame.add(gridPanel, BorderLayout.CENTER);
+            soluzioniFrame.add(buttonPanel, BorderLayout.SOUTH);
+
+            // Calcolo delle soluzioni
+            GiocoKenKen kenKen = new GiocoKenKen(c, grigliaCopia);
+            kenKen.risolvi(2); //Devo cambiare con c.getMaxSOl()
+            soluzioni = kenKen.getSoluzioni();
+            aggiornaGrigliaSoluzione();
+        }
+        soluzioniFrame.setVisible(true);
+    }
+
+    private void aggiornaGrigliaSoluzione() {
+        if (soluzioni != null && !soluzioni.isEmpty() && currentSolutionIndex < soluzioni.size()) {
+            Griglia soluzione = soluzioni.get(currentSolutionIndex);
+            for (int i = 0; i < c.getDimensione(); i++) {
+                for (int j = 0; j < c.getDimensione(); j++) {
+                    celle[i][j].setText(String.valueOf(soluzione.getEl(i,j)));
                 }
             }
         }
     }
 
-    private int[][] aggiornaGriglia(int[][] griglia) {
-        int[][] nuovaGriglia = new int[griglia.length][griglia[0].length];
-        for (int i = 0; i < griglia.length; i++) {
-            for (int j = 0; j < griglia[i].length; j++) {
-                String text = celle[i][j].getText();
-                if (!text.isEmpty()) {
-                    try {
-                        nuovaGriglia[i][j] = Integer.parseInt(text);
-                    } catch (NumberFormatException e) {
-                        nuovaGriglia[i][j] = 0;
-                    }
-                } else {
-                    nuovaGriglia[i][j] = 0;
-                }
-            }
-        }
-        return nuovaGriglia;
-    }
-
-    private void aggiungiEtichetta(JLayeredPane gridPanel) {
-        int i = 0;
+    private void aggiungiEtichetta(JLayeredPane pane) {
         for (Blocco b : c.getBlocchi()) {
             Cella prima = b.getCelle()[0];
-            JTextField casella = celle[prima.getRow()][prima.getColumn()];
             JLabel vincolo = new JLabel(b.getOperazione() + " " + b.getRisultato());
-            vincolo.setFont(new Font("Arial", Font.BOLD, 16));
-            vincolo.setForeground(Color.RED);
-            vincolo.setBounds(prima.getColumn() * 100 + 3, prima.getRow() * 100, 100, 20);
-            gridPanel.add(vincolo, Integer.valueOf(2));
+            vincolo.setFont(new Font("Arial", Font.BOLD, 18));
+            vincolo.setForeground(Color.BLUE);
+            vincolo.setVisible(true);
+            etichettePosizioni.put(vincolo, new Point(prima.getRow(), prima.getColumn()));
+            pane.add(vincolo, JLayeredPane.PALETTE_LAYER);
+        }
+    }
 
-            for (Cella cella : b.getCelle()) {
+    private void coloraCelle() {
+        int i = 0;
+        for (Blocco b : c.getBlocchi()) {
+            for (Cella c : b.getCelle()) {
                 try {
-                    celle[cella.getRow()][cella.getColumn()].setBackground(new Color(90 + i, 90 + i, 90 + i));
+                    celle[c.getRow()][c.getColumn()].setBackground(new Color(90 + i, 90 + i, 90 + i));
                 } catch (IllegalArgumentException e) {
                     i = 0;
-                    celle[cella.getRow()][cella.getColumn()].setBackground(new Color(90, 90, 90));
+                    celle[c.getRow()][c.getColumn()].setBackground(new Color(90, 90, 90));
                 }
             }
             i += 33;
         }
+    }
+
+    private void posizionaEtichetta(JLabel label, int row, int col, Dimension size) {
+        int dimensione = c.getDimensione();
+        int cellWidth = size.width / dimensione;
+        int cellHeight = size.height / dimensione;
+        label.setBounds(col * cellWidth + 3, row * cellHeight, cellWidth, 20);
+    }
+
+    private void resizeGrid(Dimension size) {
+        int dimensione = c.getDimensione();
+        int cellWidth = size.width / dimensione;
+        int cellHeight = size.height / dimensione;
+
+        gridPanel.setBounds(0, 0, size.width, size.height);
+
+        for (int i = 0; i < dimensione; i++) {
+            for (int j = 0; j < dimensione; j++) {
+                celle[i][j].setPreferredSize(new Dimension(cellWidth, cellHeight));
+            }
+        }
+
+        for (Map.Entry<JLabel, Point> entry : etichettePosizioni.entrySet()) {
+            JLabel label = entry.getKey();
+            Point pos = entry.getValue();
+            posizionaEtichetta(label, pos.x, pos.y, size);
+        }
+
+        gridPanel.revalidate();
+        gridPanel.repaint();
     }
 
     public static void main(String[] args) {
