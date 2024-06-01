@@ -8,6 +8,9 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class InterfacciaGUI extends JFrame {
@@ -17,6 +20,7 @@ public class InterfacciaGUI extends JFrame {
         setTitle("KenKen");
         setSize(800, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
 
         JLabel titleLabel = new JLabel("KENKEN", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 56));
@@ -64,9 +68,9 @@ public class InterfacciaGUI extends JFrame {
         setVisible(true);
     }
 
+
 //Funzione per gestire le caratteristiche dei pulsanti
     private void setTasto(JButton b,boolean leftRight,JPanel panel){
-        // Imposta dimensioni specifiche per i pulsanti
         Dimension buttonSize = new Dimension(200, 50);
         b.setPreferredSize(buttonSize);
 

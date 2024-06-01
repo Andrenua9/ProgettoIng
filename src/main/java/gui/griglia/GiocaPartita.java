@@ -9,15 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-/*
-
-Aggiungere etichetta con il risultato e l'operazione nei blocchi, colorare i blocchi di colore diverso
-Visualizzazione soluzioni (tasti next e previous)
-Memento nel backtracking
-Vedere che altri pattern utilizzare
-Abbellire la grafica
- */
-
 public class GiocaPartita extends JPanel {
     private Configurazione c;
     private GridLayout g;
@@ -25,7 +16,7 @@ public class GiocaPartita extends JPanel {
     private JButton abilita;
     private JButton soluzioni;
     private JButton esci;
-    private int[][] grigliaCopia; //salvo ciò che inserisce l'utente
+    private int[][] grigliaCopia;
 
     public GiocaPartita(Configurazione c) {
         this.c = c;
@@ -35,36 +26,19 @@ public class GiocaPartita extends JPanel {
         g = new GridLayout(dimensione, dimensione);
         this.grigliaCopia = new int[dimensione][dimensione];
 
-        JPanel gridPanel = new JPanel();
+        JLayeredPane gridPanel = new JLayeredPane();
         gridPanel.setLayout(g);
-
-        gridPanel.setOpaque(false);
 
         celle = new JTextField[dimensione][dimensione];
 
         for (int i = 0; i < dimensione; i++) {
             for (int j = 0; j < dimensione; j++) {
                 celle[i][j] = new JTextField();
-                gridPanel.add(celle[i][j]);
-
-
                 celle[i][j].setFont(new Font(celle[i][j].getFont().getName(), Font.ROMAN_BASELINE, 30));
                 celle[i][j].setHorizontalAlignment(JTextField.CENTER);
+                celle[i][j].setBounds(j * 100, i * 100, 100, 100);
+                gridPanel.add(celle[i][j], Integer.valueOf(1));
 
-                //Salvo il contenuto delle celle in una griglia
-                String text = celle[i][j].getText();
-                if (!text.isEmpty()) {
-                    try {
-                        grigliaCopia[i][j] = Integer.parseInt(text);
-                    } catch (NumberFormatException e) {
-                        grigliaCopia[i][j] = 0;
-                    }
-                } else {
-                    grigliaCopia[i][j] = 0;
-                }
-
-
-                //Per ogni casella di testo faccio si che l'utente possa inserire solo un numero da 1 a n
                 celle[i][j].addKeyListener(new KeyAdapter() {
                     @Override
                     public void keyTyped(KeyEvent e) {
@@ -89,9 +63,7 @@ public class GiocaPartita extends JPanel {
 
         this.add(gridPanel, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         abilita = new JButton("Abilita correzione");
         soluzioni = new JButton("Visualizza soluzioni");
         esci = new JButton("Esci");
@@ -99,8 +71,7 @@ public class GiocaPartita extends JPanel {
         buttonPanel.add(abilita);
         buttonPanel.add(soluzioni);
         buttonPanel.add(esci);
-        add(buttonPanel, BorderLayout.SOUTH);
-
+        this.add(buttonPanel, BorderLayout.SOUTH);
 
         abilita.addMouseListener(new MouseAdapter() {
             @Override
@@ -121,8 +92,8 @@ public class GiocaPartita extends JPanel {
                 timer.start();
             }
         });
-
     }
+
     public void abilitaCorrezione() {
         int[][] gg = aggiornaGriglia(grigliaCopia);
         GiocoKenKen g = new GiocoKenKen(c, gg);
@@ -131,15 +102,16 @@ public class GiocaPartita extends JPanel {
                 if (gg[i][j] != 0) {
                     if (g.assegnabile(gg[i][j], new Cella(i, j))) {
                         celle[i][j].setBackground(Color.green);
-                    } else
+                    } else {
                         celle[i][j].setBackground(Color.red);
+                    }
                 }
             }
         }
     }
 
     private int[][] aggiornaGriglia(int[][] griglia) {
-        int [][] nuovaGriglia = new int[griglia.length][griglia[0].length];
+        int[][] nuovaGriglia = new int[griglia.length][griglia[0].length];
         for (int i = 0; i < griglia.length; i++) {
             for (int j = 0; j < griglia[i].length; j++) {
                 String text = celle[i][j].getText();
@@ -157,38 +129,32 @@ public class GiocaPartita extends JPanel {
         return nuovaGriglia;
     }
 
-    private void aggiungiEtichetta(JPanel gridPanel) {
+    private void aggiungiEtichetta(JLayeredPane gridPanel) {
         int i = 0;
         for (Blocco b : c.getBlocchi()) {
-            Cella first = b.getCelle()[0];
-            JLabel vincolo = new JLabel(b.getRisultato() + " " + b.getOperazione());
-            JTextField casella = celle[first.getRow()][first.getColumn()];
+            Cella prima = b.getCelle()[0];
+            JTextField casella = celle[prima.getRow()][prima.getColumn()];
+            JLabel vincolo = new JLabel(b.getOperazione() + " " + b.getRisultato());
+            vincolo.setFont(new Font("Arial", Font.BOLD, 16));
+            vincolo.setForeground(Color.RED);
+            vincolo.setBounds(prima.getColumn() * 100 + 3, prima.getRow() * 100, 100, 20);
+            gridPanel.add(vincolo, Integer.valueOf(2));
 
-            vincolo.setBounds(casella.getX()+3,casella.getY()-(40-(c.getDimensione()-2)*6), casella.getWidth(), casella.getHeight());
-            vincolo.setOpaque(true);
-            vincolo.setBackground(new Color(255, 255, 255, 200));
-
-            gridPanel.add(vincolo, JLayeredPane.PALETTE_LAYER);
-
-            for (Cella c : b.getCelle()) {
+            for (Cella cella : b.getCelle()) {
                 try {
-                    celle[c.getRow()][c.getColumn()].setBackground(new Color(90 + i, 90 + i, 90 + i));
+                    celle[cella.getRow()][cella.getColumn()].setBackground(new Color(90 + i, 90 + i, 90 + i));
                 } catch (IllegalArgumentException e) {
                     i = 0;
-                    celle[c.getRow()][c.getColumn()].setBackground(new Color(90, 90, 90));
+                    celle[cella.getRow()][cella.getColumn()].setBackground(new Color(90, 90, 90));
                 }
             }
             i += 33;
         }
-
     }
 
-
-
     public static void main(String[] args) {
-        // Example usage
         Configurazione config = new Configurazione();
-        config.setDimensione(3); // Set desired dimension
+        config.setDimensione(3);
 
         JFrame frame = new JFrame("Gioca Partita");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
