@@ -53,6 +53,9 @@ public class GiocaPartita extends JPanel {
                 gbc.gridy = i;
                 gridPanel.add(celle[i][j], gbc);
 
+
+
+
                 celle[i][j].addKeyListener(new KeyAdapter() {
                     @Override
                     public void keyTyped(KeyEvent e) {
@@ -87,6 +90,28 @@ public class GiocaPartita extends JPanel {
         buttonPanel.add(esci);
         this.add(buttonPanel, BorderLayout.SOUTH);
 
+        esci.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.exit(0);
+            }
+        });
+        abilitaCorrezione.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                abilitaCorrezione();
+                Timer timer = new Timer(5000, new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        coloraCelle();
+                        ((Timer) e.getSource()).stop();
+                    }
+                });
+                timer.setRepeats(false);
+                timer.start();
+            }
+        });
+
         visualizzaSoluzioni.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -101,6 +126,23 @@ public class GiocaPartita extends JPanel {
                 resizeGrid(pane.getSize());
             }
         });
+    }
+//Uso questo metodo ogni volta che viene abilitata la correzzione per controllare la griglia corrente
+    private void aggiornaGriglia() {
+        for (int i = 0; i < c.getDimensione(); i++) {
+            for (int j = 0; j < c.getDimensione(); j++) {
+                String text = celle[i][j].getText();
+                if (!text.isEmpty()) {
+                    try {
+                        grigliaCopia[i][j] = Integer.parseInt(text);
+                    } catch (NumberFormatException e) {
+                        grigliaCopia[i][j] = 0;
+                    }
+                } else {
+                    grigliaCopia[i][j] = 0;
+                }
+            }
+        }
     }
 
     private void visualizzaSoluzioni() {
@@ -149,13 +191,16 @@ public class GiocaPartita extends JPanel {
             soluzioniFrame.add(gridPanel, BorderLayout.CENTER);
             soluzioniFrame.add(buttonPanel, BorderLayout.SOUTH);
 
-            // Calcolo delle soluzioni
-            GiocoKenKen kenKen = new GiocoKenKen(c, grigliaCopia);
-            kenKen.risolvi(2); //Devo cambiare con c.getMaxSOl()
-            soluzioni = kenKen.getSoluzioni();
-            aggiornaGrigliaSoluzione();
+            soluzioni = calcolaSoluzioni();
         }
         soluzioniFrame.setVisible(true);
+    }
+
+    private List<Griglia> calcolaSoluzioni(){
+        GiocoKenKen kenKen = new GiocoKenKen(c, grigliaCopia);
+        kenKen.risolvi(2); //Devo cambiare con c.getMaxSOl()
+        soluzioni = kenKen.getSoluzioni();
+        return soluzioni;
     }
 
     private void aggiornaGrigliaSoluzione() {
@@ -164,6 +209,12 @@ public class GiocaPartita extends JPanel {
             for (int i = 0; i < c.getDimensione(); i++) {
                 for (int j = 0; j < c.getDimensione(); j++) {
                     celle[i][j].setText(String.valueOf(soluzione.getEl(i,j)));
+                    celle[i][j].addKeyListener(new KeyAdapter() {
+                        @Override
+                        public void keyTyped(KeyEvent e) {
+                            e.consume();
+                        }
+                    });
                 }
             }
         }
@@ -224,6 +275,71 @@ public class GiocaPartita extends JPanel {
 
         gridPanel.revalidate();
         gridPanel.repaint();
+    }
+
+    private void abilitaCorrezione() {
+        aggiornaGriglia();
+        if (haiVinto()) {
+            return;
+        } else {
+            Griglia gg = new Griglia(grigliaCopia);
+            Griglia soluzionePiuSimile = trovaSoluzionePiuSimile(gg);
+            coloraCelle(gg, soluzionePiuSimile);
+        }
+    }
+
+    private boolean haiVinto() {
+        soluzioni=calcolaSoluzioni();
+        Griglia gg = new Griglia(grigliaCopia);
+        for (int i = 0; i < soluzioni.size(); i++) {
+            if (gg.equals(soluzioni.get(i))) {
+                JOptionPane.showMessageDialog(null, "Congratulazioni! Hai vinto!", "Vittoria", JOptionPane.INFORMATION_MESSAGE);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Griglia trovaSoluzionePiuSimile(Griglia gg) {
+        Griglia soluzionePiuSimile = null;
+        int maxSimilitudine = -1;
+
+        for (Griglia soluzione : soluzioni) {
+            int similitudine = calcolaSimilitudine(gg, soluzione);
+            if (similitudine > maxSimilitudine) {
+                maxSimilitudine = similitudine;
+                soluzionePiuSimile = soluzione;
+            }
+        }
+
+        return soluzionePiuSimile;
+    }
+
+    private int calcolaSimilitudine(Griglia gg, Griglia soluzione) {
+        int similitudine = 0;
+        for (int i = 0; i < c.getDimensione(); i++) {
+            for (int j = 0; j < c.getDimensione(); j++) {
+                if (gg.getEl(i, j)==(soluzione.getEl(i, j))) {
+                    similitudine++;
+                }
+            }
+        }
+        return similitudine;
+    }
+
+    private void coloraCelle(Griglia gg, Griglia soluzione) {
+        for (int i = 0; i < c.getDimensione(); i++) {
+            for (int j = 0; j < c.getDimensione(); j++) {
+                JTextField cella = celle[i][j];
+                if(gg.getEl(i,j)!=0) {
+                    if (gg.getEl(i, j) == (soluzione.getEl(i, j))) {
+                        cella.setBackground(Color.GREEN);
+                    } else {
+                        cella.setBackground(Color.RED);
+                    }
+                }
+            }
+        }
     }
 
     public static void main(String[] args) {
