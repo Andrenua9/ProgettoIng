@@ -16,6 +16,20 @@ public class Griglia implements Originator {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Griglia other = (Griglia) obj;
+        for (int i = 0; i < griglia.length; i++) {
+            for (int j = 0; j < griglia[0].length; j++) {
+                if (griglia[i][j] != other.griglia[i][j]) return false;
+            }
+        }
+        return true;
+    }
+
+
+    @Override
     public Memento getMemento() {
         return new GrigliaMemento(getGriglia());
     }

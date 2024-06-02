@@ -54,8 +54,6 @@ public class GiocaPartita extends JPanel {
                 gridPanel.add(celle[i][j], gbc);
 
 
-
-
                 celle[i][j].addKeyListener(new KeyAdapter() {
                     @Override
                     public void keyTyped(KeyEvent e) {
@@ -115,7 +113,12 @@ public class GiocaPartita extends JPanel {
         visualizzaSoluzioni.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                visualizzaSoluzioni();
+                int scelta = JOptionPane.showConfirmDialog(null, "Ti arrendi?", "Resa", JOptionPane.YES_NO_OPTION);
+                if (scelta == JOptionPane.YES_OPTION) {
+                    visualizzaSoluzioni();
+                    JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(GiocaPartita.this);
+                    frame.dispose();
+                }
             }
         });
 
@@ -126,8 +129,11 @@ public class GiocaPartita extends JPanel {
                 resizeGrid(pane.getSize());
             }
         });
+
+        soluzioni = calcolaSoluzioni();
     }
-//Uso questo metodo ogni volta che viene abilitata la correzzione per controllare la griglia corrente
+
+    // Uso questo metodo ogni volta che viene abilitata la correzione per controllare la griglia corrente
     private void aggiornaGriglia() {
         for (int i = 0; i < c.getDimensione(); i++) {
             for (int j = 0; j < c.getDimensione(); j++) {
@@ -143,7 +149,15 @@ public class GiocaPartita extends JPanel {
                 }
             }
         }
+        Griglia gg = new Griglia(grigliaCopia);
+        for (Griglia soluzione : soluzioni) {
+            if (gg.equals(soluzione)) {
+                JOptionPane.showMessageDialog(null, "Congratulazioni! Hai vinto!", "Vittoria", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+        }
     }
+
 
     private void visualizzaSoluzioni() {
         if (soluzioniFrame == null) {
@@ -154,7 +168,6 @@ public class GiocaPartita extends JPanel {
 
             JButton next = new JButton("Next");
             JButton previous = new JButton("Previous");
-            JButton ritornaAllaPartita = new JButton("Ritorna alla partita");
 
             next.addActionListener(new ActionListener() {
                 @Override
@@ -176,29 +189,21 @@ public class GiocaPartita extends JPanel {
                 }
             });
 
-            ritornaAllaPartita.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    soluzioniFrame.setVisible(false);
-                }
-            });
 
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             buttonPanel.add(previous);
             buttonPanel.add(next);
-            buttonPanel.add(ritornaAllaPartita);
 
             soluzioniFrame.add(gridPanel, BorderLayout.CENTER);
             soluzioniFrame.add(buttonPanel, BorderLayout.SOUTH);
-
-            soluzioni = calcolaSoluzioni();
         }
+        aggiornaGrigliaSoluzione();
         soluzioniFrame.setVisible(true);
     }
 
-    private List<Griglia> calcolaSoluzioni(){
+    private List<Griglia> calcolaSoluzioni() {
         GiocoKenKen kenKen = new GiocoKenKen(c, grigliaCopia);
-        kenKen.risolvi(2); //Devo cambiare con c.getMaxSOl()
+        kenKen.risolvi(2); // Devo cambiare con c.getMaxSol()
         soluzioni = kenKen.getSoluzioni();
         return soluzioni;
     }
@@ -208,17 +213,14 @@ public class GiocaPartita extends JPanel {
             Griglia soluzione = soluzioni.get(currentSolutionIndex);
             for (int i = 0; i < c.getDimensione(); i++) {
                 for (int j = 0; j < c.getDimensione(); j++) {
-                    celle[i][j].setText(String.valueOf(soluzione.getEl(i,j)));
-                    celle[i][j].addKeyListener(new KeyAdapter() {
-                        @Override
-                        public void keyTyped(KeyEvent e) {
-                            e.consume();
-                        }
-                    });
+                    celle[i][j].setText(String.valueOf(soluzione.getEl(i, j)));
+                    celle[i][j].setEditable(false);
                 }
             }
         }
     }
+
+
 
     private void aggiungiEtichetta(JLayeredPane pane) {
         for (Blocco b : c.getBlocchi()) {
@@ -279,25 +281,9 @@ public class GiocaPartita extends JPanel {
 
     private void abilitaCorrezione() {
         aggiornaGriglia();
-        if (haiVinto()) {
-            return;
-        } else {
-            Griglia gg = new Griglia(grigliaCopia);
-            Griglia soluzionePiuSimile = trovaSoluzionePiuSimile(gg);
-            coloraCelle(gg, soluzionePiuSimile);
-        }
-    }
-
-    private boolean haiVinto() {
-        soluzioni=calcolaSoluzioni();
         Griglia gg = new Griglia(grigliaCopia);
-        for (int i = 0; i < soluzioni.size(); i++) {
-            if (gg.equals(soluzioni.get(i))) {
-                JOptionPane.showMessageDialog(null, "Congratulazioni! Hai vinto!", "Vittoria", JOptionPane.INFORMATION_MESSAGE);
-                return true;
-            }
-        }
-        return false;
+        Griglia soluzionePiuSimile = trovaSoluzionePiuSimile(gg);
+        coloraCelle(gg, soluzionePiuSimile);
     }
 
     private Griglia trovaSoluzionePiuSimile(Griglia gg) {
@@ -319,7 +305,7 @@ public class GiocaPartita extends JPanel {
         int similitudine = 0;
         for (int i = 0; i < c.getDimensione(); i++) {
             for (int j = 0; j < c.getDimensione(); j++) {
-                if (gg.getEl(i, j)==(soluzione.getEl(i, j))) {
+                if (gg.getEl(i, j) == (soluzione.getEl(i, j))) {
                     similitudine++;
                 }
             }
@@ -331,7 +317,7 @@ public class GiocaPartita extends JPanel {
         for (int i = 0; i < c.getDimensione(); i++) {
             for (int j = 0; j < c.getDimensione(); j++) {
                 JTextField cella = celle[i][j];
-                if(gg.getEl(i,j)!=0) {
+                if (gg.getEl(i, j) != 0) {
                     if (gg.getEl(i, j) == (soluzione.getEl(i, j))) {
                         cella.setBackground(Color.GREEN);
                     } else {
