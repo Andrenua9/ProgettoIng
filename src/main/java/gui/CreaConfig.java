@@ -77,6 +77,7 @@ public class CreaConfig extends JFrame {
         giocaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 new GiocaPartita(c).setVisible(true);
             }
         });

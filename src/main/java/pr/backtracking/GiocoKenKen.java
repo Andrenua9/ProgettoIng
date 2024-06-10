@@ -197,7 +197,7 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
             }
             System.out.println();
         }
-       soluzioni.add(new Griglia(griglia));
+        soluzioni.add(new Griglia(griglia));
     }
 
     public List<Griglia> getSoluzioni() {
@@ -205,6 +205,7 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
     }
 
     public static void main(String[] args) {
+
         int dimensione = 3;
         Configurazione configurazione = new Configurazione();
         configurazione.setDimensione(dimensione);
@@ -264,12 +265,13 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
 
         configurazione.setNumeroBlocchi(4);
         configurazione.setBlocchi(blocchi);
+        configurazione.setMaxSol(2);
 
         int[][] griglia = new int[dimensione][dimensione];
 
         GiocoKenKen kenKen = new GiocoKenKen(configurazione, griglia);
-
-        kenKen.risolvi(2);
+        kenKen.risolvi(configurazione.getMaxSol());
+        System.out.println(kenKen.getSoluzioni());
     }
 }
 

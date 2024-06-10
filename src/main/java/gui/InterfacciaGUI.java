@@ -88,7 +88,6 @@ public class InterfacciaGUI extends JFrame {
     }
 
 
-
     private void secondaPagina(JPanel panel) {
         getContentPane().remove(panel);
         validate();
@@ -118,7 +117,7 @@ public class InterfacciaGUI extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 Configurazione c = new Configurazione();
                 try {
-                    c = (Configurazione) c.ripristinaObject();
+                    c = c.ripristinaObject();
                     JFrame frame = new JFrame("Gioca Partita");
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     frame.setSize(500, 500);

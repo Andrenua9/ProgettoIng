@@ -122,7 +122,7 @@ public class GiocaPartita extends JPanel {
             }
         });
 
-        // Riadatta la dimensione della finestra
+        // Riadatta la dimensione della finestra e delle etichette
         pane.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -205,6 +205,7 @@ public class GiocaPartita extends JPanel {
         GiocoKenKen kenKen = new GiocoKenKen(c, grigliaCopia);
         kenKen.risolvi(2); // Devo cambiare con c.getMaxSol()
         soluzioni = kenKen.getSoluzioni();
+        System.out.println(soluzioni.toString());
         return soluzioni;
     }
 
@@ -227,9 +228,9 @@ public class GiocaPartita extends JPanel {
             Cella prima = b.getCelle()[0];
             JLabel vincolo = new JLabel(b.getOperazione() + " " + b.getRisultato());
             vincolo.setFont(new Font("Arial", Font.BOLD, 18));
-            vincolo.setForeground(Color.BLUE);
+            vincolo.setForeground(Color.YELLOW);
             vincolo.setVisible(true);
-            etichettePosizioni.put(vincolo, new Point(prima.getRow(), prima.getColumn()));
+            etichettePosizioni.put(vincolo, new Point(prima.getRow(), prima.getColumn())); //Memorizzo la posizione dell'etichetta in una mappa
             pane.add(vincolo, JLayeredPane.PALETTE_LAYER);
         }
     }

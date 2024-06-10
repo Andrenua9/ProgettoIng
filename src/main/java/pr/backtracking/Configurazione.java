@@ -84,7 +84,7 @@ public class Configurazione implements Serializable {
         }
     }
 
-    public Object ripristinaObject() throws IOException, ClassNotFoundException {
+    public Configurazione ripristinaObject() throws IOException, ClassNotFoundException {
         JFileChooser fileChooser = new JFileChooser();
 
         int result = fileChooser.showOpenDialog(null);
@@ -93,7 +93,7 @@ public class Configurazione implements Serializable {
             String nomeFile = fileChooser.getSelectedFile().getAbsolutePath();
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(nomeFile));
 
-            return ois.readObject();
+            return (Configurazione) ois.readObject();
         } else {
             return null;
         }
