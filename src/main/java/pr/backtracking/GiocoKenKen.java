@@ -25,6 +25,10 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
         soluzioni=new ArrayList<Griglia>();
     }
 
+    public int[][] getGriglia() {
+        return griglia;
+    }
+
     @Override
     public Cella primoPuntoDiScelta() {
         return new Cella(0, 0);
@@ -98,15 +102,7 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
         return true;
     }
 
-    private boolean ePieno(Blocco b, int[][] griglia) {
-        for (Cella c : b.getCelle()) {
-            int i = c.getRow();
-            int j = c.getColumn();
-            if (griglia[i][j] == 0)
-                return false;
-        }
-        return true;
-    }
+
 
     private boolean controllaOperazione(Blocco b, int[][] griglia, Cella c, int scelta) {
         int ris = scelta;
