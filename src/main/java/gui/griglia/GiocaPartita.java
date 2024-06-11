@@ -203,7 +203,7 @@ public class GiocaPartita extends JPanel {
 
     private List<Griglia> calcolaSoluzioni() {
         GiocoKenKen kenKen = new GiocoKenKen(c, grigliaCopia);
-        kenKen.risolvi(2); // Devo cambiare con c.getMaxSol()
+        kenKen.risolvi(c.getMaxSol()); // Devo cambiare con c.getMaxSol()
         soluzioni = kenKen.getSoluzioni();
         System.out.println(soluzioni.toString());
         return soluzioni;

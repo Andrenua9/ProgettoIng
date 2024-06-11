@@ -63,6 +63,7 @@ public class Configurazione implements Serializable {
 
         return dimensione;
     }
+
     public int upperBound(){
 
         return (dimensione*dimensione+1)/2;

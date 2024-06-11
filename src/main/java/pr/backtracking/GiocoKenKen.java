@@ -110,53 +110,60 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
 
     private boolean controllaOperazione(Blocco b, int[][] griglia, Cella c, int scelta) {
         int ris = scelta;
+        boolean isComplete = true;
         for (Cella cc : b.getCelle()) {
-            if (!cc.equals(c) && griglia[cc.getRow()][cc.getColumn()] != 0) {
-                int valore = griglia[cc.getRow()][cc.getColumn()];
-                if(ePieno(b,griglia) && b.getRisultato()!= ris){
-                    return false;
-                }
+            int valore = griglia[cc.getRow()][cc.getColumn()];
+            if (!cc.equals(c) && valore != 0) {
                 switch (b.getOperazione()) {
                     case "+":
                         ris += valore;
-                        if (ris > b.getRisultato()) {
-                            return false;
-                        }
+                        break;
+                    case "*":
+                        ris *= valore;
                         break;
                     case "-":
                         ris = Math.abs(ris - valore);
-                        if (ris != b.getRisultato()) {
-                            return false;
-                        }
                         break;
                     case "/":
-                        if (valore != 0 && (ris % valore == 0 || valore % ris == 0)) {
-                            int div1 = ris / valore;
-                            int div2 = valore / ris;
-                            if ((div1 != b.getRisultato() && div2 != b.getRisultato())) {
-                                return false;
-                            }
+                        if (ris % valore == 0) {
+                            ris /= valore;
+                        } else if (valore % ris == 0) {
+                            ris = valore / ris;
                         } else {
                             return false;
                         }
                         break;
-                    case "*":
-                        ris *= valore;
-                        if (ris > b.getRisultato()) {
-                            return false;
-                        }
-                        break;
                     default:
-                        if (ePieno(b,griglia)&&ris != b.getRisultato()) {
-                            return false;
-                        }
-                        break;
+                        throw new IllegalArgumentException("Operazione sconosciuta: " + b.getOperazione());
                 }
+            } else if (!cc.equals(c) && valore == 0) {
+                isComplete = false;
             }
-
         }
+
+        // Verifica se il blocco è pieno e il risultato è corretto
+        if (isComplete && ris != b.getRisultato()) {
+            return false;
+        }
+
+        // Se il blocco non è completo, verificare che il risultato parziale non superi il risultato finale
+        switch (b.getOperazione()) {
+            case "+":
+            case "*":
+                if (ris > b.getRisultato()) {
+                    return false;
+                }
+                break;
+            case "-":
+            case "/":
+                // Non possiamo verificare parzialmente per sottrazione o divisione
+                break;
+            default:
+        }
+
         return true;
     }
+
 
 
     @Override
@@ -274,4 +281,3 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
         System.out.println(kenKen.getSoluzioni());
     }
 }
-
