@@ -124,6 +124,7 @@ public class InterfacciaGUI extends JFrame {
                     frame.setLayout(new BorderLayout());
                     frame.add(new GiocaPartita(c), BorderLayout.CENTER);
                     frame.setVisible(true);
+                    dispose();
                 } catch (IOException | ClassNotFoundException ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, "Errore durante il caricamento del file.", "Errore", JOptionPane.ERROR_MESSAGE);

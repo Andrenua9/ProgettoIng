@@ -78,7 +78,13 @@ public class CreaConfig extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                new GiocaPartita(c).setVisible(true);
+                JFrame frame = new JFrame("Gioca Partita");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(500, 500);
+                frame.setLayout(new BorderLayout());
+                frame.add(new GiocaPartita(c), BorderLayout.CENTER);
+                frame.setVisible(true);
+                dispose();
             }
         });
 
@@ -152,6 +158,7 @@ public class CreaConfig extends JFrame {
 
 
     private void salvaConfigurazione() throws IOException {
+        boolean isSaved = false;
         try {
             int dimensione = Integer.parseInt(dimensioneField.getText());
             if (dimensione < 3 || dimensione > 6) {
@@ -176,8 +183,8 @@ public class CreaConfig extends JFrame {
             c.setBlocchi(blocchi);
 
             c.salvaObject();
+            isSaved = true;
 
-            JOptionPane.showMessageDialog(this, "Configurazione salvata con successo.");
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Errore: Inserisci un numero valido per la dimensione della griglia, il numero di blocchi e le soluzioni massime.", "Errore", JOptionPane.ERROR_MESSAGE);
         } catch (IllegalArgumentException ex) {
@@ -185,13 +192,11 @@ public class CreaConfig extends JFrame {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Errore durante il salvataggio della configurazione: " + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
         }
+
+        if (isSaved) {
+            JOptionPane.showMessageDialog(this, "Configurazione salvata con successo.");
+        }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new CreaConfig().setVisible(true);
-            }
-        });
-    }
+
 }

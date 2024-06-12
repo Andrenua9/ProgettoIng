@@ -45,7 +45,6 @@ public class Configurazione implements Serializable {
 
     public void setBlocchi(Blocco[] blocchi) {
         this.blocchi = blocchi;
-        // Aggiorna il numero di blocchi ogni volta che l'array viene modificato
         if (blocchi != null) {
             numeroBlocchi = blocchi.length;
         } else {
@@ -100,17 +99,6 @@ public class Configurazione implements Serializable {
         }
     }
 
-
-    public static void main(String[] args) {
-        Configurazione oggetto = new Configurazione();
-
-        try {
-            oggetto.salvaObject();
-            System.out.println("Oggetto salvato correttamente.");
-        } catch (IOException e) {
-            System.err.println("Si è verificato un errore durante il salvataggio dell'oggetto: " + e.getMessage());
-        }
-    }
     }
 
 

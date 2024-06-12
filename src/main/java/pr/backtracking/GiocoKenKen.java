@@ -104,7 +104,7 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
 
 
 
-    private boolean controllaOperazione(Blocco b, int[][] griglia, Cella c, int scelta) {
+    public boolean controllaOperazione(Blocco b, int[][] griglia, Cella c, int scelta) {
         int ris = scelta;
         boolean isComplete = true;
         for (Cella cc : b.getCelle()) {
@@ -137,12 +137,12 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
             }
         }
 
-        // Verifica se il blocco è pieno e il risultato è corretto
+        // Verifico se il blocco è pieno e il risultato è corretto
         if (isComplete && ris != b.getRisultato()) {
             return false;
         }
 
-        // Se il blocco non è completo, verificare che il risultato parziale non superi il risultato finale
+        // Se il blocco non è completo, verifico che il risultato parziale non superi il risultato finale
         switch (b.getOperazione()) {
             case "+":
             case "*":
@@ -152,7 +152,6 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
                 break;
             case "-":
             case "/":
-                // Non possiamo verificare parzialmente per sottrazione o divisione
                 break;
             default:
         }
@@ -206,7 +205,7 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
     public List<Griglia> getSoluzioni() {
         return soluzioni;
     }
-
+/*
     public static void main(String[] args) {
 
         int dimensione = 3;
@@ -275,5 +274,5 @@ public class GiocoKenKen implements Backtracking<Cella, Integer> {
         GiocoKenKen kenKen = new GiocoKenKen(configurazione, griglia);
         kenKen.risolvi(configurazione.getMaxSol());
         System.out.println(kenKen.getSoluzioni());
-    }
+    }*/
 }

@@ -329,15 +329,4 @@ public class GiocaPartita extends JPanel {
         }
     }
 
-    public static void main(String[] args) {
-        Configurazione config = new Configurazione();
-        config.setDimensione(3);
-
-        JFrame frame = new JFrame("Gioca Partita");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 500);
-        frame.setLayout(new BorderLayout());
-        frame.add(new GiocaPartita(config), BorderLayout.CENTER);
-        frame.setVisible(true);
-    }
 }
